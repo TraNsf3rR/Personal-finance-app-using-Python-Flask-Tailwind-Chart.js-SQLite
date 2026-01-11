@@ -5,10 +5,8 @@ Git Bash:
     source venv/Scripts/activate
 
 To launch website 
-CMD:
+CMD and Git Bash:
     python app.py
-Git Bash:
-    flask run
 
 To deactivate
 CMD and Git Bash:
