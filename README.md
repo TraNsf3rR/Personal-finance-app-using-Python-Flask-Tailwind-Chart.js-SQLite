@@ -14,7 +14,6 @@ MUST-HAVE
         venv\Scripts\activate.bat
     Git Bash:
         source venv/Scripts/activate
-
     EXIT virtual environment (Git bash or CMD):
         deactivate
 
@@ -26,3 +25,6 @@ CMD or Git Bash:
     python app.py
 
 5: Enjoy!
+
+App features:
+- Ability to 
