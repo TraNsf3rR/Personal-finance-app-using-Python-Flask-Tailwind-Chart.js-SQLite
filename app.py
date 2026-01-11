@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for, make_response, flash, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date, datetime
+from sqlalchemy import func
 
 app = Flask(__name__)
 
@@ -35,6 +36,7 @@ def parse_date_or_none(s: str):
 @app.route("/")
 def index():
 
+# Info for date / category filtering
 # 1.Read query string
     start_str = (request.args.get("start") or "").strip()
     end_str = (request.args.get("end") or "").strip()
@@ -54,13 +56,27 @@ def index():
         q = q.filter(Expense.date >= start_date)
     if end_date:
         q = q.filter(Expense.date <= end_date)
-
     if selected_category:
         q = q.filter(Expense.category == selected_category)
 
-
+# For pie chart
     expenses = q.order_by(Expense.date.desc(), Expense.id.desc()).all()
     total = round(sum(e.amount for e in expenses), 2)
+
+    cat_q = db.session.query(Expense.category, func.sum(Expense.amount))
+
+    if start_date:
+        cat_q = cat_q.filter(Expense.date >= start_date)
+    if end_date:
+        cat_q = cat_q.filter(Expense.date >= end_date)
+    if selected_category:
+        cat_q = cat_q.filter(Expense.date == selected_category)
+
+    cat_rows = cat_q.group_by(Expense.category).all()
+    cat_labels = [c for c, _ in cat_rows]
+    cat_values = [round(float(s or 0), 2) for _, s in cat_rows]
+
+# For day chart
 
     return render_template(
         "index.html",
@@ -72,6 +88,8 @@ def index():
         start_str = start_str,
         end_str = end_str,
         selected_category = selected_category,
+        cat_labels = cat_labels,
+        cat_values = cat_values
         )
 
 
