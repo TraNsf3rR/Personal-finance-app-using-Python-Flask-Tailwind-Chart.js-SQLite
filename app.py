@@ -68,15 +68,28 @@ def index():
     if start_date:
         cat_q = cat_q.filter(Expense.date >= start_date)
     if end_date:
-        cat_q = cat_q.filter(Expense.date >= end_date)
+        cat_q = cat_q.filter(Expense.date <= end_date)
     if selected_category:
-        cat_q = cat_q.filter(Expense.date == selected_category)
+        cat_q = cat_q.filter(Expense.category == selected_category)
 
     cat_rows = cat_q.group_by(Expense.category).all()
     cat_labels = [c for c, _ in cat_rows]
     cat_values = [round(float(s or 0), 2) for _, s in cat_rows]
 
 # For day chart
+    day_q = db.session.query(Expense.date, func.sum(Expense.amount))
+
+    if start_date:
+        day_q = day_q.filter(Expense.date >= start_date)
+    if end_date:
+        day_q = day_q.filter(Expense.date <= end_date)
+    if selected_category:
+        day_q = day_q.filter(Expense.category == selected_category)
+
+    day_rows = day_q.group_by(Expense.category).order_by(Expense.date).all()
+    
+    day_labels = [d.isoformat() for d, _ in day_rows]
+    day_values = [round(float(s or 0), 2) for _, s in day_rows]
 
     return render_template(
         "index.html",
@@ -89,7 +102,9 @@ def index():
         end_str = end_str,
         selected_category = selected_category,
         cat_labels = cat_labels,
-        cat_values = cat_values
+        cat_values = cat_values,
+        day_labels = day_labels,
+        day_values = day_values
         )
 
 
