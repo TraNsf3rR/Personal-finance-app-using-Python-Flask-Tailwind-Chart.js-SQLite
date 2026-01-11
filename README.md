@@ -27,4 +27,8 @@ CMD or Git Bash:
 5: Enjoy!
 
 App features:
-- Ability to 
+- Add / delete expenses
+- Edit added expenses
+- Filter expenses by category / date
+- Interactive charts to vizualize expenses in selected filter settings
+- Export selected expenses to csv file for data analysis by other means
